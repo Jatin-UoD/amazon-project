@@ -18,12 +18,14 @@ export default function MoreScreen() {
   const { user, logout, households, activeHouseholdId } = useAuth();
 
   const items = [
-    { title: "Automations", route: null, note: "Manage rules in backend / future screen" },
-    { title: "Water Management", route: null, note: "Tank & pump on Rooms → Utility" },
-    { title: "Notifications", route: null },
-    { title: "Members & Roles", route: null },
-    { title: "Device Pairing", route: null },
-    { title: "AI Assistant", route: "/ai" },
+    { title: "AI Assistant", route: "/ai" as const },
+    { title: "Ring Security", route: "/(tabs)/security" as const },
+    { title: "Energy Analytics", route: "/(tabs)/energy" as const },
+    { title: "Rooms & Devices", route: "/(tabs)/rooms" as const },
+    { title: "Automations", route: null, note: "Morning, night, and tank rules run on the backend." },
+    { title: "Water Tank & Pump", route: null, note: "Utility room pump is on the device list." },
+    { title: "Notifications", route: null, note: "Alerts land in the activity log." },
+    { title: "Household Settings", route: null, note: "Members and tariff are on the household API." },
   ];
 
   return (
@@ -42,8 +44,8 @@ export default function MoreScreen() {
           key={item.title}
           style={[styles.row, { backgroundColor: c.surface, borderColor: c.border }]}
           onPress={() => {
-            if (item.route) router.push(item.route as any);
-            else Alert.alert(item.title, item.note || "Available via API / next iteration");
+            if (item.route) router.push(item.route);
+            else Alert.alert(item.title, item.note || "Next iteration");
           }}
         >
           <Text style={{ color: c.text, fontWeight: "500" }}>{item.title}</Text>

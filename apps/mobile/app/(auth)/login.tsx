@@ -41,7 +41,8 @@ export default function LoginScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <View style={styles.hero}>
-        <Text style={[styles.logo, { color: c.primary }]}>HomePilot</Text>
+        <Text style={[styles.logo, { color: c.text }]}>Welcome Back</Text>
+        <Text style={{ color: c.textMuted, marginBottom: 24 }}>Sign in to your account</Text>
         <Text style={[styles.tagline, { color: c.textMuted }]}>
           One Home. One App. Total Control.
         </Text>

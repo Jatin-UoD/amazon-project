@@ -57,9 +57,10 @@ export default function HomeScreen() {
       contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
-      <Text style={[styles.greeting, { color: c.text }]}>{hh?.name || "Home"}</Text>
+      <Text style={{ color: c.textMuted }}>Good Morning,</Text>
+      <Text style={[styles.greeting, { color: c.text }]}>Jatin</Text>
       <Text style={{ color: c.textMuted, marginBottom: 16 }}>
-        {onlineCount}/{devices.length} devices online
+        {hh?.name || "My Home"} · {onlineCount}/{devices.length || 8} devices · {live?.live?.powerW != null ? `${(live.live.powerW / 1000).toFixed(1)} kW` : "2.4 kW"}
       </Text>
 
       {/* System health */}
