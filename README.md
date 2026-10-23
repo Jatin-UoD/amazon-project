@@ -1,8 +1,15 @@
 # HomePilot — One Home. One App. Total Control.
 
-Production-oriented smart-home platform for monitoring and controlling household devices.
+Judges: this is a smart-home app (lights, climate, energy, water, Ring), not an Amazon storefront. The name of the repo is historical.
 
-**Repo:** https://github.com/Jatin-UoD/amazon-project
+**See it in under 3 minutes:** [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md)
+
+Demo login (already filled on the sign-in screen):
+
+- Email: `demo@homepilot.app`
+- Password: `HomePilot2024!`
+
+What is real in the demo vs simulated is labelled in the app. Ring, a local AI model, and ESP32 hardware are optional. Without them, rules + the MQTT simulator still run the same screens.
 
 ## Quick Start (Hackathon / Local)
 

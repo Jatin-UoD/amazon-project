@@ -17,7 +17,7 @@ export default function MoreScreen() {
   const c = scheme === "light" ? colors.light : colors.dark;
   const { user, logout, households, activeHouseholdId } = useAuth();
 
-  const items = [
+  const items: { title: string; route: string | null; note?: string }[] = [
     { title: "AI Assistant", route: "/ai" as const },
     { title: "Ring Security", route: "/(tabs)/security" as const },
     { title: "Energy Analytics", route: "/(tabs)/energy" as const },

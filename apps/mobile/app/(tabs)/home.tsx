@@ -27,12 +27,12 @@ export default function HomeScreen() {
 
   const load = useCallback(async () => {
     if (!activeHouseholdId) return;
-    await fetchAll(activeHouseholdId);
     try {
+      await fetchAll(activeHouseholdId);
       const data = await api(`/api/households/${activeHouseholdId}/energy/live`);
       setLive(data);
     } catch {
-      /* offline ok */
+      /* keep the last good dashboard if the API blips */
     }
   }, [activeHouseholdId]);
 

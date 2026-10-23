@@ -6,6 +6,7 @@ import rateLimit from "@fastify/rate-limit";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { PrismaClient } from "@prisma/client";
+import { ZodError } from "zod";
 import { authRoutes } from "./routes/auth";
 import { householdRoutes } from "./routes/households";
 import { deviceRoutes } from "./routes/devices";
@@ -142,6 +143,20 @@ async function bootstrap() {
         source: "simulated",
         recordedAt: new Date(reading.recordedAt),
       },
+    });
+  });
+
+  app.setErrorHandler((err, request, reply) => {
+    if (err instanceof ZodError) {
+      return reply.status(400).send({
+        error: "Invalid request",
+        details: err.flatten(),
+      });
+    }
+    request.log.error(err);
+    const status = (err as { statusCode?: number }).statusCode ?? 500;
+    return reply.status(status).send({
+      error: status >= 500 ? "Internal error" : err.message,
     });
   });
 

@@ -23,14 +23,18 @@ export default function EnergyScreen() {
 
   const load = useCallback(async () => {
     if (!activeHouseholdId) return;
-    const [l, s, h] = await Promise.all([
-      api(`/api/households/${activeHouseholdId}/energy/live`),
-      api(`/api/households/${activeHouseholdId}/energy/summary`),
-      api(`/api/households/${activeHouseholdId}/energy/history?interval=hour`),
-    ]);
-    setLive(l);
-    setSummary(s);
-    setHistory(h.series || []);
+    try {
+      const [l, s, h] = await Promise.all([
+        api(`/api/households/${activeHouseholdId}/energy/live`),
+        api(`/api/households/${activeHouseholdId}/energy/summary`),
+        api(`/api/households/${activeHouseholdId}/energy/history?interval=hour`),
+      ]);
+      setLive(l);
+      setSummary(s);
+      setHistory(h.series || []);
+    } catch {
+      /* keep previous chart */
+    }
   }, [activeHouseholdId]);
 
   useEffect(() => {

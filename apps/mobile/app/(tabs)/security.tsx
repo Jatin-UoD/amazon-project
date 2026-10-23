@@ -23,12 +23,16 @@ export default function SecurityScreen() {
 
   const load = useCallback(async () => {
     if (!activeHouseholdId) return;
-    const [s, e] = await Promise.all([
-      api("/api/ring/status"),
-      api(`/api/ring/households/${activeHouseholdId}/events`),
-    ]);
-    setStatus(s);
-    setEvents(e);
+    try {
+      const [s, e] = await Promise.all([
+        api("/api/ring/status"),
+        api(`/api/ring/households/${activeHouseholdId}/events`),
+      ]);
+      setStatus(s);
+      setEvents(e);
+    } catch {
+      /* status stays empty until the API answers */
+    }
   }, [activeHouseholdId]);
 
   useEffect(() => {

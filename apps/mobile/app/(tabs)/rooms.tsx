@@ -20,7 +20,9 @@ export default function RoomsScreen() {
   const { devices, rooms, fetchAll, sendCommand } = useDevices();
 
   useEffect(() => {
-    if (activeHouseholdId) fetchAll(activeHouseholdId);
+    if (activeHouseholdId) {
+      fetchAll(activeHouseholdId).catch(() => undefined);
+    }
   }, [activeHouseholdId]);
 
   return (
