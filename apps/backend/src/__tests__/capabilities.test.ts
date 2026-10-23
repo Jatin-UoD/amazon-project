@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
 
+/**
+ * Lightweight pure tests for capability enforcement logic.
+ * Full integration tests require a running database.
+ */
+
 function hasCapability(
   capabilities: Array<{ capability: string }>,
   name: string

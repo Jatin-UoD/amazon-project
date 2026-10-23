@@ -1,0 +1,39 @@
+{
+  "name": "@homepilot/backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "tsx prisma/seed.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@fastify/jwt": "^9.0.1",
+    "@fastify/rate-limit": "^10.1.1",
+    "@fastify/swagger": "^9.2.0",
+    "@fastify/swagger-ui": "^5.1.0",
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "fastify": "^5.1.0",
+    "mqtt": "^5.10.1",
+    "uuid": "^11.0.3",
+    "zod": "^3.23.8",
+    "@homepilot/shared": "*"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.9.0",
+    "@types/uuid": "^10.0.0",
+    "prisma": "^5.22.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  }
+}

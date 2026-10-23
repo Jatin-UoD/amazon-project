@@ -49,6 +49,7 @@ export const useDevices = create<DevicesState>((set, get) => ({
       method: "POST",
       body: JSON.stringify({ capability, payload }),
     });
+    // Optimistic update from response
     if (res.device) {
       set({
         devices: get().devices.map((d) =>

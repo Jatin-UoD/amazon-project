@@ -62,6 +62,7 @@ async function bootstrap() {
     routePrefix: "/docs",
   });
 
+  // Decorate request with user
   app.decorate("authenticate", async function (request: any, reply: any) {
     try {
       await request.jwtVerify();
@@ -70,6 +71,7 @@ async function bootstrap() {
     }
   });
 
+  // Health
   app.get("/health", async () => ({
     status: "ok",
     timestamp: new Date().toISOString(),
@@ -85,6 +87,7 @@ async function bootstrap() {
     }
   });
 
+  // Routes
   await app.register(authRoutes, { prefix: "/api/auth" });
   await app.register(householdRoutes, { prefix: "/api/households" });
   await app.register(deviceRoutes, { prefix: "/api" });
@@ -94,6 +97,7 @@ async function bootstrap() {
   await app.register(ringRoutes, { prefix: "/api/ring" });
   await app.register(notificationRoutes, { prefix: "/api" });
 
+  // MQTT
   await mqttService.connect();
   mqttService.onDeviceAck(async (ack) => {
     await prisma.command.updateMany({
@@ -134,6 +138,7 @@ async function bootstrap() {
     });
   });
 
+  // Start automation engine
   automationEngine.start();
 
   const port = Number(process.env.PORT) || 3000;
@@ -148,6 +153,7 @@ bootstrap().catch((err) => {
   process.exit(1);
 });
 
+// Graceful shutdown
 process.on("SIGINT", async () => {
   await mqttService.disconnect();
   await prisma.$disconnect();

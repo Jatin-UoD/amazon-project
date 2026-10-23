@@ -31,6 +31,19 @@ services:
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
 
+  # Optional: backend can also run in Docker for full stack
+  # backend:
+  #   build: ./apps/backend
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     mosquitto:
+  #       condition: service_started
+  #   ports:
+  #     - "3000:3000"
+  #   env_file:
+  #     - ./apps/backend/.env
+
 volumes:
   postgres_data:
   mosquitto_data:

@@ -30,7 +30,7 @@ export const CAPABILITIES = [
   "temperature_setpoint",
   "ac_mode",
   "ac_fan_mode",
-  "position",
+  "position", // curtains 0-100
   "media_control",
   "power_metering",
   "water_level",

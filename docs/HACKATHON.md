@@ -6,7 +6,7 @@ HomePilot unifies lights, climate, energy, water, and Ring security into a singl
 
 ## Problem
 
-Homeowners juggle multiple apps for lights, AC, pumps, energy meters, and security cameras. Most "smart home" demos hide capability gaps and invent live data.
+Homeowners juggle multiple apps for lights, AC, pumps, energy meters, and security cameras. Most “smart home” demos hide capability gaps and invent live data.
 
 ## Solution
 
