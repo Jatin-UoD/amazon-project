@@ -30,8 +30,16 @@ async function bootstrap() {
     origin: process.env.CORS_ORIGIN === "*" ? true : process.env.CORS_ORIGIN?.split(","),
   });
 
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("JWT_SECRET is required in production");
+    }
+    console.warn("[auth] JWT_SECRET is not set — using a dev-only secret");
+  }
+
   await app.register(jwt, {
-    secret: process.env.JWT_SECRET || "dev-secret",
+    secret: jwtSecret || "dev-only-not-for-production",
   });
 
   await app.register(rateLimit, {
@@ -66,8 +74,8 @@ async function bootstrap() {
   app.decorate("authenticate", async function (request: any, reply: any) {
     try {
       await request.jwtVerify();
-    } catch (err) {
-      reply.status(401).send({ error: "Unauthorized" });
+    } catch {
+      return reply.status(401).send({ error: "Unauthorized" });
     }
   });
 
@@ -78,12 +86,12 @@ async function bootstrap() {
     mqtt: mqttService.isConnected(),
   }));
 
-  app.get("/ready", async () => {
+  app.get("/ready", async (_request, reply) => {
     try {
       await prisma.$queryRaw`SELECT 1`;
-      return { status: "ready" };
+      return { status: "ready", mqtt: mqttService.isConnected() };
     } catch {
-      return { status: "not_ready" };
+      return reply.status(503).send({ status: "not_ready" });
     }
   });
 
@@ -97,8 +105,7 @@ async function bootstrap() {
   await app.register(ringRoutes, { prefix: "/api/ring" });
   await app.register(notificationRoutes, { prefix: "/api" });
 
-  // MQTT
-  await mqttService.connect();
+  // Handlers first so early messages are not dropped, then connect without blocking listen.
   mqttService.onDeviceAck(async (ack) => {
     await prisma.command.updateMany({
       where: { id: ack.commandId },
@@ -138,8 +145,8 @@ async function bootstrap() {
     });
   });
 
-  // Start automation engine
   automationEngine.start();
+  void mqttService.connect();
 
   const port = Number(process.env.PORT) || 3000;
   const host = process.env.HOST || "0.0.0.0";

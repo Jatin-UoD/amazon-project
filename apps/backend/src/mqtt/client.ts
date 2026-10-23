@@ -35,11 +35,19 @@ class MqttService extends EventEmitter {
   async connect(): Promise<void> {
     const url = process.env.MQTT_URL || "mqtt://localhost:1883";
     return new Promise((resolve) => {
+      let settled = false;
+      const done = () => {
+        if (settled) return;
+        settled = true;
+        resolve();
+      };
+
       this.client = mqtt.connect(url, {
         clientId: process.env.MQTT_CLIENT_ID || `homepilot-backend-${Date.now()}`,
         username: process.env.MQTT_USERNAME || undefined,
         password: process.env.MQTT_PASSWORD || undefined,
         reconnectPeriod: 3000,
+        connectTimeout: 4000,
       });
 
       this.client.on("connect", () => {
@@ -49,28 +57,43 @@ class MqttService extends EventEmitter {
         this.client?.subscribe("hp/+/devices/+/state");
         this.client?.subscribe("hp/+/devices/+/heartbeat");
         this.client?.subscribe("hp/+/energy/+/reading");
-        resolve();
+        done();
       });
 
       this.client.on("message", (topic, payload) => {
         try {
-          const data = JSON.parse(payload.toString());
+          const data = JSON.parse(payload.toString()) as Record<string, unknown>;
           const parts = topic.split("/");
           // hp/{householdId}/devices/{deviceId}/ack|state|heartbeat
           // hp/{householdId}/energy/{meterId}/reading
-          if (parts[3] === "devices") {
-            const householdId = parts[1];
-            const deviceId = parts[3] === "devices" ? parts[3] : parts[3];
-            // fix parsing
-          }
-          if (topic.includes("/ack")) {
-            this.emit("deviceAck", data as DeviceAck);
-          } else if (topic.includes("/state")) {
-            this.emit("deviceState", data as DeviceStateMsg);
-          } else if (topic.includes("/heartbeat")) {
-            this.emit("heartbeat", data);
-          } else if (topic.includes("/energy/") && topic.endsWith("/reading")) {
-            this.emit("energyReading", data as EnergyReadingMsg);
+          const householdId = parts[1];
+          const kind = parts[2];
+          const id = parts[3];
+
+          if (kind === "devices" && parts[4] === "ack") {
+            this.emit("deviceAck", {
+              ...data,
+              householdId: data.householdId || householdId,
+              deviceId: data.deviceId || id,
+            } as DeviceAck);
+          } else if (kind === "devices" && parts[4] === "state") {
+            this.emit("deviceState", {
+              ...data,
+              householdId: data.householdId || householdId,
+              deviceId: data.deviceId || id,
+            } as DeviceStateMsg);
+          } else if (kind === "devices" && parts[4] === "heartbeat") {
+            this.emit("heartbeat", {
+              ...data,
+              householdId: data.householdId || householdId,
+              deviceId: data.deviceId || id,
+            });
+          } else if (kind === "energy" && parts[4] === "reading") {
+            this.emit("energyReading", {
+              ...data,
+              householdId: data.householdId || householdId,
+              meterId: data.meterId || id,
+            } as EnergyReadingMsg);
           }
         } catch (e) {
           console.error("[MQTT] Bad message", e);
@@ -80,14 +103,15 @@ class MqttService extends EventEmitter {
       this.client.on("error", (err) => {
         console.error("[MQTT] Error", err.message);
         this.connected = false;
+        done();
       });
 
       this.client.on("close", () => {
         this.connected = false;
       });
 
-      // Resolve even if broker not up yet (reconnect will handle)
-      setTimeout(resolve, 2000);
+      // Do not block API startup if the broker is down; client keeps reconnecting.
+      setTimeout(done, 1500);
     });
   }
 
