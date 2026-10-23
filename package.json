@@ -5,16 +5,19 @@
   "description": "HomePilot — One Home. One App. Total Control. Smart home platform.",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "simulator"
   ],
   "scripts": {
+    "postinstall": "npm run db:generate --if-present",
     "dev:backend": "npm run dev --workspace=apps/backend",
     "dev:mobile": "npm run start --workspace=apps/mobile",
     "build:backend": "npm run build --workspace=apps/backend",
+    "db:generate": "npm run prisma:generate --workspace=apps/backend",
+    "db:push": "npm run prisma:push --workspace=apps/backend",
     "db:migrate": "npm run prisma:migrate --workspace=apps/backend",
     "db:seed": "npm run prisma:seed --workspace=apps/backend",
-    "db:generate": "npm run prisma:generate --workspace=apps/backend",
-    "simulator": "npm run start --workspace=simulator",
+    "simulator": "npm run start --workspace=@homepilot/simulator",
     "test": "npm run test --workspaces --if-present",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down"
